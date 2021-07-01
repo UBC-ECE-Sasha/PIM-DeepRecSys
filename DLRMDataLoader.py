@@ -52,17 +52,20 @@ class DLRMDataLoader:
     (nbatches, lT)             = self.datagen.generate_output_data()
 
     batch_id   = request.batch_id
-    lS_l_curr  = (np.array(lS_l[batch_id]))
-    #lS_l_curr  = np.transpose(np.array(lS_l_curr[:request.batch_size]))
 
-    lS_i_curr  = (np.array(lS_i[batch_id]))
-    lS_T_curr  = (np.array(lT[batch_id]))
-    lS_X_curr  = (np.array(lX[batch_id]))
+    lS_l_curr  = np.transpose(np.array(lS_l[batch_id]))
+    lS_l_curr  = np.transpose(np.array(lS_l_curr[:request.batch_size]))
 
     #make offsets[i][0] = 0
     for l in lS_l_curr:
       l[0] = 0
 
+    lS_i_curr = np.array(lS_i[batch_id])
+    lS_i_curr = np.array(lS_i_curr[:][:, :request.batch_size * self.args.num_indices_per_lookup])
+
+    lS_T_curr  = (np.array(lT[batch_id][:request.batch_size]))
+    lS_X_curr  = np.array(lX[batch_id][:request.batch_size])
+    
     return batch_id, torch.tensor(lS_X_curr), torch.tensor(lS_l_curr, dtype=torch.long), torch.tensor(lS_i_curr, dtype=torch.long), torch.tensor(lS_T_curr) 
 
   def kill_generator(self):
